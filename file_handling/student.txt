@@ -1,0 +1,9 @@
+Student Info
+Name = Rohini Sable
+Age = 35
+Student Info
+Name = Pratik Mhatre
+Age = 20
+Student Info
+Name = Abdul Gani Memon
+Age = 26
