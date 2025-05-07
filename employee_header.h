@@ -12,6 +12,25 @@ typedef struct employeeInfo
 
 #define FILE_NAME "employees.txt"
 
+void findById(int id, employee *emp)
+{
+    FILE *fptr = fopen(FILE_NAME, "rb");
+    employee e1;
+    while (fread(&e1, sizeof(employee), 1, fptr) > 0)
+    {
+        if (e1.empId == id)
+        {
+            emp->empId = e1.empId;
+            strcpy(emp->name, e1.name);
+            strcpy(emp->department, e1.department);
+            emp->salary = e1.salary;
+            return; // exit
+        }
+    }
+
+    emp->empId = -1;
+}
+
 void saveEmployee()
 {
     FILE *fptr = fopen(FILE_NAME, "ab");
@@ -25,23 +44,35 @@ void saveEmployee()
         printf("\n----------------------------------------------------\n");
         printf("Enter employee id: ");
         scanf("%d", &e1.empId);
-
-        fflush(stdin);
-        printf("Enter employee name: ");
-        fgets(e1.name, MAX_SIZE, stdin);
-
-        fflush(stdin);
-        printf("Enter department: ");
-        fgets(e1.department, MAX_SIZE, stdin);
         fflush(stdin);
 
-        printf("Enter salary: ");
-        scanf("%lf", &e1.salary);
-        fflush(stdin);
-        printf("----------------------------------------------------\n");
-        // search by id
-        fwrite(&e1, sizeof(employee), 1, fptr);
-        printf("\nEmployee with %d saved successfully\n", e1.empId);
+        // check if empId is already exists
+        employee existingEmployee;
+        findById(e1.empId, &existingEmployee);
+        printf("Name = %s", existingEmployee.name);
+        printf("ID = %d\n", existingEmployee.empId);
+        if (existingEmployee.empId == -1)
+        {
+            printf("Enter employee name: ");
+            fgets(e1.name, MAX_SIZE, stdin);
+
+            fflush(stdin);
+            printf("Enter department: ");
+            fgets(e1.department, MAX_SIZE, stdin);
+            fflush(stdin);
+
+            printf("Enter salary: ");
+            scanf("%lf", &e1.salary);
+            fflush(stdin);
+            printf("----------------------------------------------------\n");
+            // search by id
+            fwrite(&e1, sizeof(employee), 1, fptr);
+            printf("\nEmployee with id = %d saved successfully\n", e1.empId);
+        }
+        else
+        {
+            printf("\nEmployee with id = %d already exists\n", e1.empId);
+        }
     }
 
     fclose(fptr);
