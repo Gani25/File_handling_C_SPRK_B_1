@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <string.h>
 #define MAX_SIZE 50
 
 typedef struct employeeInfo
@@ -159,28 +157,69 @@ void updateEmployee()
     }
 
     // Update Logic
-    FILE *fptr = fopen(FILE_NAME, "ab+");
+    FILE *fptr = fopen(FILE_NAME, "rb+");
 
     employee e1;
+    int choice;
+    printf("Select Choice For Update:\n");
+    printf("1. Update Name\n");
+    printf("2. Update Department\n");
+    printf("3. Update Salary\n");
+    printf("4. Update All\n");
+    scanf("%d", &choice);
+    fflush(stdin);
     while (fread(&e1, sizeof(employee), 1, fptr) > 0)
     {
         if (e1.empId == empId)
         {
-            // update all 3 fields name, salary, department
-            printf("Enter updated employee name: ");
-            fgets(e1.name, MAX_SIZE, stdin);
+            switch (choice)
+            {
+            case 1:
+                printf("Enter updated employee name: ");
+                fgets(e1.name, MAX_SIZE, stdin);
 
-            fflush(stdin);
-            printf("Enter updated department: ");
-            fgets(e1.department, MAX_SIZE, stdin);
-            fflush(stdin);
+                fflush(stdin);
+                fseek(fptr, -sizeof(employee), SEEK_CUR);
+                fwrite(&e1, sizeof(employee), 1, fptr);
 
-            printf("Enter updated salary: ");
-            scanf("%lf", &e1.salary);
-            fflush(stdin);
+                break;
+            case 2:
+                printf("Enter updated department: ");
+                fgets(e1.department, MAX_SIZE, stdin);
+                fflush(stdin);
+                fseek(fptr, -sizeof(employee), SEEK_CUR);
+                fwrite(&e1, sizeof(employee), 1, fptr);
+                break;
+            case 3:
+                printf("Enter updated salary: ");
+                scanf("%lf", &e1.salary);
+                fflush(stdin);
 
-            fseek(fptr, -sizeof(employee), SEEK_SET);
-            fwrite(&e1, sizeof(employee), 1, fptr);
+                fseek(fptr, -sizeof(employee), SEEK_CUR);
+                fwrite(&e1, sizeof(employee), 1, fptr);
+                break;
+            case 4:
+
+                // update all 3 fields name, salary, department
+                printf("Enter updated employee name: ");
+                fgets(e1.name, MAX_SIZE, stdin);
+
+                fflush(stdin);
+                printf("Enter updated department: ");
+                fgets(e1.department, MAX_SIZE, stdin);
+                fflush(stdin);
+
+                printf("Enter updated salary: ");
+                scanf("%lf", &e1.salary);
+                fflush(stdin);
+
+                fseek(fptr, -sizeof(employee), SEEK_CUR);
+                fwrite(&e1, sizeof(employee), 1, fptr);
+                break;
+            default:
+                printf("Please select correct choice\n");
+                break;
+            }
             break;
         }
     }
