@@ -24,10 +24,12 @@ void findById(int id, employee *emp)
             strcpy(emp->name, e1.name);
             strcpy(emp->department, e1.department);
             emp->salary = e1.salary;
+            fclose(fptr);
             return; // exit
         }
     }
 
+    fclose(fptr);
     emp->empId = -1;
 }
 
@@ -49,8 +51,8 @@ void saveEmployee()
         // check if empId is already exists
         employee existingEmployee;
         findById(e1.empId, &existingEmployee);
-        printf("Name = %s", existingEmployee.name);
-        printf("ID = %d\n", existingEmployee.empId);
+        // printf("Name = %s", existingEmployee.name);
+        // printf("ID = %d\n", existingEmployee.empId);
         if (existingEmployee.empId == -1)
         {
             printf("Enter employee name: ");
@@ -103,6 +105,88 @@ void getAllEmployees()
         printf("\nEmployee Not Available\n");
         printf("\n----------------------------------------------------\n");
     }
+}
+
+void deleteEmployeeByEmpId()
+{
+    int empId;
+    printf("Enter employee id to be deleted: ");
+    scanf("%d", &empId);
+    fflush(stdin);
+    // check if emp with id exists or not?
+    employee existingEmp;
+    findById(empId, &existingEmp);
+    if (existingEmp.empId == -1)
+    {
+        printf("Employee with id = %d not exists\n", empId);
+        return;
+    }
+
+    // Delete Logic
+    FILE *fptr = fopen(FILE_NAME, "ab+");
+    FILE *tempFile = fopen("tempEmployee.txt", "ab");
+
+    employee e1;
+    while (fread(&e1, sizeof(employee), 1, fptr) > 0)
+    {
+        if (e1.empId != empId)
+        {
+            // copy into temp
+            fwrite(&e1, sizeof(employee), 1, tempFile);
+        }
+    }
+
+    printf("Deleting employee with id = %d\n", empId);
+    fclose(fptr);
+    fclose(tempFile);
+    remove(FILE_NAME);
+    rename("tempEmployee.txt", FILE_NAME);
+}
+
+void updateEmployee()
+{
+    int empId;
+    printf("Enter employee id to be updated: ");
+    scanf("%d", &empId);
+    fflush(stdin);
+    // check if emp with id exists or not?
+    employee existingEmp;
+    findById(empId, &existingEmp);
+    if (existingEmp.empId == -1)
+    {
+        printf("Employee with id = %d not exists\n", empId);
+        return;
+    }
+
+    // Update Logic
+    FILE *fptr = fopen(FILE_NAME, "ab+");
+
+    employee e1;
+    while (fread(&e1, sizeof(employee), 1, fptr) > 0)
+    {
+        if (e1.empId == empId)
+        {
+            // update all 3 fields name, salary, department
+            printf("Enter updated employee name: ");
+            fgets(e1.name, MAX_SIZE, stdin);
+
+            fflush(stdin);
+            printf("Enter updated department: ");
+            fgets(e1.department, MAX_SIZE, stdin);
+            fflush(stdin);
+
+            printf("Enter updated salary: ");
+            scanf("%lf", &e1.salary);
+            fflush(stdin);
+
+            fseek(fptr, -sizeof(employee), SEEK_SET);
+            fwrite(&e1, sizeof(employee), 1, fptr);
+            break;
+        }
+    }
+
+    printf("Updating employee with id = %d\n", empId);
+    fclose(fptr);
 }
 
 // Find Employees By Department -- Multiple

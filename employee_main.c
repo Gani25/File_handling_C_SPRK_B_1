@@ -10,6 +10,8 @@ int main()
         printf("Press\n");
         printf("1. Add Employee\n");
         printf("2. Get All Employee\n");
+        printf("3. Delete Employee By Id\n");
+        printf("4. Update Employee By Id\n");
         printf("7. Exit\n");
         printf("----------------------------------------------------\n");
         scanf("%d", &choice);
@@ -22,6 +24,12 @@ int main()
             break;
         case 2:
             getAllEmployees();
+            break;
+        case 3:
+            deleteEmployeeByEmpId();
+            break;
+        case 4:
+            updateEmployee();
             break;
         case 7:
             printf("\n----------------------------------------------------\n");
